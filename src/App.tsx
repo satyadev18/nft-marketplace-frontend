@@ -1,20 +1,24 @@
 import { ethers } from "ethers";
 import React, { useState } from "react";
-import './App.css';
-
-import "bootstrap/dist/css/bootstrap.min.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+
+import './App.css';
+import "bootstrap/dist/css/bootstrap.min.css";
+import "react-toastify/dist/ReactToastify.css";
+
 import MarketplaceAddress from "./utils/contractsData/Marketplace-address.json";
 import MarketplaceAbi from "./utils/contractsData/Marketplace.json";
 import NFTAddress from "./utils/contractsData/NFT-address.json";
 import NFTAbi from "./utils/contractsData/NFT.json";
-import { Navbar } from "react-bootstrap";
 import NoNetworkPage from "./features/NoNetworkPage/NoNetworkPage";
 import ProtectedRoutes from "./routes/ProtectedRoutes";
 import AllListings from "./features/AllListings/AllListings";
 import Purchases from "./features/Purchases/Purchases";
 import CreateNft from "./features/CreateNft/CreateNft";
 import MyListings from "./features/MyListings/MyListings";
+import Navbar from "./features/Navbar/Navbar";
+import { ToastContainer } from "react-toastify";
+import Home from "./features/Home/Home";
 declare var window: any
 
 const App = () => {
@@ -51,11 +55,13 @@ const App = () => {
 
   return (
     <div>
-      <BrowserRouter>
-      <Navbar/>
+      <BrowserRouter> 
+
+      <Navbar account={account} connectToWeb3={connectToWeb3}/>
+      <ToastContainer autoClose={3000}/>
         <Routes>
           <Route path="/addnetwork" element={<NoNetworkPage/>} />
-          <Route path="/home" element={<NoNetworkPage/>} />
+          <Route path="/" element={<Home/>} />
           <Route element={<ProtectedRoutes account={account}/>}>
 
           <Route path="/market" element={<AllListings marketplace={marketPlaceContract} nft={nftContract}/>} />
