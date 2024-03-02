@@ -18,6 +18,7 @@ import CreateNft from "./features/CreateNft/CreateNft";
 import MyListings from "./features/MyListings/MyListings";
 import Navbar from "./features/Navbar/Navbar";
 import { ToastContainer } from "react-toastify";
+import Home from "./features/Home/Home";
 declare var window: any
 
 const App = () => {
@@ -54,13 +55,13 @@ const App = () => {
 
   return (
     <div>
-      <BrowserRouter>
+      <BrowserRouter> 
 
       <Navbar account={account} connectToWeb3={connectToWeb3}/>
       <ToastContainer autoClose={3000}/>
         <Routes>
           <Route path="/addnetwork" element={<NoNetworkPage/>} />
-          <Route path="/home" element={<NoNetworkPage/>} />
+          <Route path="/" element={<Home/>} />
           <Route element={<ProtectedRoutes account={account}/>}>
 
           <Route path="/market" element={<AllListings marketplace={marketPlaceContract} nft={nftContract}/>} />
