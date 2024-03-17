@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import Logo from '../../components/Icons/Logo';
 
 interface ComponentProps {
  connectToWeb3:()=>void;
@@ -26,18 +27,14 @@ const Navbar: React.FC<ComponentProps> = (prop) => {
             marginLeft: "14px",
           }}
         >
-          <img
-            style={{ width: "40px", height: "40px" }}
-            src="https://seeklogo.com/images/B/bitcoin-logo-594596D72F-seeklogo.com.png"
-            alt=""
-          />
+         <Logo  width= "80px" height= "80px"/>
           <h3 style={{ marginLeft: "8px", color: "#fff" }}>
             NFT MARKETPLACE{" "}
           </h3>
         </div>
         <div>
           <ul style={{ display: "flex", listStyle: "none" }}>
-          <Link style={{textDecoration:'none'}} to='/market'>  <li
+          <Link style={{textDecoration:'none'}} to='/'>  <li
               className="list-items"
               style={{
                 marginLeft: "1.5REM",

@@ -1,15 +1,15 @@
-import React from 'react'
-import { NftComponentProps } from '../../shared/interface'
+import React from "react";
+import { NftComponentProps } from "../../shared/interface";
 import { ethers } from "ethers";
-import axios from 'axios';
+import axios from "axios";
 import { useState } from "react";
-const CreateNft : React.FC<NftComponentProps> = ({nft,marketplace}) => {
+const CreateNft: React.FC<NftComponentProps> = ({ nft, marketplace }) => {
   const [fileImg, setFile] = useState<any>();
   const [name, setName] = useState("");
   const [desc, setDescription] = useState("");
   const [price, setPrice] = useState("");
 
-  const sendJSONtoIPFS = async (ImgHash:any) => {
+  const sendJSONtoIPFS = async (ImgHash: any) => {
     try {
       const resJSON = await axios({
         method: "post",
@@ -35,7 +35,7 @@ const CreateNft : React.FC<NftComponentProps> = ({nft,marketplace}) => {
     }
   };
 
-  const sendFileToIPFS = async (e:any) => {
+  const sendFileToIPFS = async (e: any) => {
     e.preventDefault();
     console.log("123");
     console.log(e);
@@ -67,34 +67,20 @@ const CreateNft : React.FC<NftComponentProps> = ({nft,marketplace}) => {
     }
   };
 
-  ////////////////////////////////////////////////////////
-  // const createNFT = async () => {
-  //   if (!image || !price || !name || !description) return
-  //   try{
-  //     sendJSONtoIPFS(image)
-  //     // const result = await client.add(JSON.stringify({image, price, name, description}))
-  //     // mintThenList(result)
-  //   } catch(error) {
-  //     console.log("ipfs uri upload error: ", error)
-  //   }
-  // }
-  const mintThenList = async (uri:any) => {
-    // const uri = `https://ipfs.infura.io/ipfs/${result.path}`
-    // mint nft
+  const mintThenList = async (uri: any) => {
     await (await nft.mint(uri)).wait();
-    // get tokenId of new nft
+
     const id = await nft.tokenCount();
     console.log("id", id);
-    // approve marketplace to spend nft
+
     await (await nft.setApprovalForAll(marketplace.address, true)).wait();
 
-    // add nft to marketplace
     const listingPrice = ethers.utils.parseEther(price.toString());
     console.log("listingPrice", listingPrice);
     await (await marketplace.makeItem(nft.address, id, listingPrice)).wait();
   };
   return (
-    <div style={{ padding: "1rem",marginTop:'80px' }}>
+    <div style={{ padding: "1rem", marginTop: "80px" }}>
       <div style={{ width: "40%", margin: "auto" }}>
         <h4>Create NFT's</h4>
         <div style={{ marginTop: "1rem" }}>
@@ -159,7 +145,6 @@ const CreateNft : React.FC<NftComponentProps> = ({nft,marketplace}) => {
               marginTop: ".5rem",
               outline: "none",
             }}
-          
             placeholder="Description"
           />
         </div>
@@ -187,6 +172,6 @@ const CreateNft : React.FC<NftComponentProps> = ({nft,marketplace}) => {
       </div>
     </div>
   );
-}
+};
 
-export default CreateNft
+export default CreateNft;
