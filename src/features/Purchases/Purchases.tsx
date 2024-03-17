@@ -10,22 +10,17 @@ const Purchases : React.FC<NftComponentProps> = ({nft,marketplace,account}) => {
     // Fetch purchased items from marketplace by quering Offered events with the buyer set as the user
     const filter =  marketplace.filters.Bought(null,null,null,null,null,account)
     const results = await marketplace.queryFilter(filter)
-    console.log(results)
     //Fetch metadata of each nft and add that to listedItem object.
     const purchases = await Promise.all(results.map(async( i:any) => {
       // fetch arguments from each result
       i = i.args
-      console.log('i', i)
       // get uri url from nft contract
       const uri = await nft.tokenURI(i.tokenId)
-      console.log('uri', uri)
       // use uri to fetch the nft metadata stored on ipfs 
       const response = await fetch(uri)
-      console.log('response', response)
       const metadata = await response.json()
       // get total price of item (item price + fee)
       const totalPrice = await marketplace.getTotalPrice(i.ItemId)
-      console.log('totalPrice', totalPrice)
       // define listed item object
       let purchasedItem = {
         totalPrice,
@@ -45,7 +40,12 @@ const Purchases : React.FC<NftComponentProps> = ({nft,marketplace,account}) => {
   useEffect(() => {
     loadPurchasedItems()
   }, [])
- console.log(purchases,'purchases')
+  if (loading)
+  return (
+    <main className="d-flex justify-content-center align-items-center m-4" style={{ padding: "1rem 0",marginTop:'150px',marginLeft:'480px' }}>
+      <h2>Loading Data From Blockchain...</h2>
+    </main>
+  );
   return (
     <div className="flex justify-center">
            

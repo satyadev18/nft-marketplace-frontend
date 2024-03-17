@@ -43,7 +43,6 @@ const App = () => {
    const accounts = await window.ethereum.request({
       method: "eth_requestAccounts",
     });
-    console.log(accounts,'accounts')
     setAccount(accounts[0]);
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
@@ -61,10 +60,10 @@ const App = () => {
       <ToastContainer autoClose={3000}/>
         <Routes>
           <Route path="/addnetwork" element={<NoNetworkPage/>} />
-          <Route path="/" element={<Home/>} />
+          {/* <Route path="/" element={<Home/>} /> */}
           <Route element={<ProtectedRoutes account={account}/>}>
-
-          <Route path="/market" element={<AllListings marketplace={marketPlaceContract} nft={nftContract}/>} />
+          
+          <Route path="/" element={<AllListings marketplace={marketPlaceContract} nft={nftContract}/>} />
           <Route path="/purchase" element={<Purchases marketplace={marketPlaceContract} nft={nftContract} account={account} />} />
           <Route path="/listings" element={<MyListings marketplace={marketPlaceContract} nft={nftContract} account={account} />} />
           <Route path="/create" element={<CreateNft marketplace={marketPlaceContract} nft={nftContract} />} />

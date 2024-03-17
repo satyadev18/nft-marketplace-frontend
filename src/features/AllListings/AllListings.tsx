@@ -8,29 +8,19 @@ const AllListings: React.FC<NftComponentProps> = ({nft,marketplace}) => {
 
   const loadMarketplaceItems = async () => {
     // Load all unsold items
-    console.log("object");
     const itemCount = await marketplace.itemCount();
-    console.log("itemcount", itemCount);
     let nftItems = [];
     for (let i = 1; i <= itemCount; i++) {
-      console.log("inside loop", i);
       const item = await marketplace.marketItems(i);
-      console.log("item", item);
       if (!item.sold) {
         // get uri url from nft contract
-        console.log("inside sold");
         const uri = await nft.tokenURI(item.tokenId);
-        console.log("uri", uri);
         // use uri to fetch the nft metadata stored on ipfs
         const response = await fetch(uri);
-        console.log("resoponse", response);
         const metadata = await response.json();
-        console.log("metadata", metadata);
         // get total price of item (item price + fee)
-        console.log("item.itemId", item.ItemId);
         const totalPrice = await marketplace.getTotalPrice(item.ItemId);
         // Add item to items array
-        console.log("totalPrice", totalPrice);
         nftItems.push({
           totalPrice,
           itemId: item.ItemId,
@@ -44,7 +34,6 @@ const AllListings: React.FC<NftComponentProps> = ({nft,marketplace}) => {
     setLoading(false);
     setItems(nftItems);
   };
-  console.log(items, "nft items");
   const buyMarketItem = async (item:any) => {
     await (
       await marketplace.purchaseItems(item.itemId, { value: item.totalPrice })
@@ -55,13 +44,12 @@ const AllListings: React.FC<NftComponentProps> = ({nft,marketplace}) => {
   useEffect(() => {
     loadMarketplaceItems();
   }, []);
-  console.log("marketPlace", marketplace);
   if (loading)
-    return (
-      <main style={{ padding: "1rem 0",marginTop:'150px',marginLeft:'480px' }}>
-        <h2>Loading...</h2>
-      </main>
-    );
+  return (
+    <main className="d-flex justify-content-center align-items-center m-4" style={{ padding: "1rem 0",marginTop:'150px',marginLeft:'480px' }}>
+      <h2>Loading Data From Blockchain...</h2>
+    </main>
+  );
   return (
     <div className="flex justify-center all-nft-container">
       <div className="all-nft-container-1">

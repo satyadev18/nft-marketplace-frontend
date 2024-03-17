@@ -1,15 +1,16 @@
-import React from 'react'
-import { NftComponentProps } from '../../shared/interface'
+import React from "react";
+import { NftComponentProps } from "../../shared/interface";
 import { ethers } from "ethers";
-import axios from 'axios';
+import axios from "axios";
 import { useState } from "react";
-const CreateNft : React.FC<NftComponentProps> = ({nft,marketplace}) => {
+import { toast } from "react-toastify";
+const CreateNft: React.FC<NftComponentProps> = ({ nft, marketplace }) => {
   const [fileImg, setFile] = useState<any>();
   const [name, setName] = useState("");
   const [desc, setDescription] = useState("");
   const [price, setPrice] = useState("");
 
-  const sendJSONtoIPFS = async (ImgHash:any) => {
+  const sendJSONtoIPFS = async (ImgHash: any) => {
     try {
       const resJSON = await axios({
         method: "post",
@@ -26,26 +27,20 @@ const CreateNft : React.FC<NftComponentProps> = ({nft,marketplace}) => {
       });
 
       const tokenURI = `https://gateway.pinata.cloud/ipfs/${resJSON.data.IpfsHash}`;
-      console.log("Token URI", tokenURI);
 
       mintThenList(tokenURI);
     } catch (error) {
-      console.log("JSON to IPFS: ");
       console.log(error);
     }
   };
 
-  const sendFileToIPFS = async (e:any) => {
+  const sendFileToIPFS = async (e: any) => {
     e.preventDefault();
-    console.log("123");
-    console.log(e);
 
     if (fileImg) {
       try {
-        console.log("1234");
         const formData = new FormData();
         formData.append("file", fileImg);
-        console.log(formData);
         const resFile = await axios({
           method: "post",
           url: "https://api.pinata.cloud/pinning/pinFileToIPFS",
@@ -58,43 +53,26 @@ const CreateNft : React.FC<NftComponentProps> = ({nft,marketplace}) => {
         });
 
         const ImgHash = `https://gateway.pinata.cloud/ipfs/${resFile.data.IpfsHash}`;
-        console.log(ImgHash);
         sendJSONtoIPFS(ImgHash);
       } catch (error) {
-        console.log("File to IPFS: ");
         console.log(error);
       }
     }
   };
 
-  ////////////////////////////////////////////////////////
-  // const createNFT = async () => {
-  //   if (!image || !price || !name || !description) return
-  //   try{
-  //     sendJSONtoIPFS(image)
-  //     // const result = await client.add(JSON.stringify({image, price, name, description}))
-  //     // mintThenList(result)
-  //   } catch(error) {
-  //     console.log("ipfs uri upload error: ", error)
-  //   }
-  // }
-  const mintThenList = async (uri:any) => {
-    // const uri = `https://ipfs.infura.io/ipfs/${result.path}`
-    // mint nft
+  const mintThenList = async (uri: any) => {
     await (await nft.mint(uri)).wait();
-    // get tokenId of new nft
+
     const id = await nft.tokenCount();
-    console.log("id", id);
-    // approve marketplace to spend nft
+
     await (await nft.setApprovalForAll(marketplace.address, true)).wait();
 
-    // add nft to marketplace
     const listingPrice = ethers.utils.parseEther(price.toString());
-    console.log("listingPrice", listingPrice);
     await (await marketplace.makeItem(nft.address, id, listingPrice)).wait();
+    toast('Your Nft has been generated successfully')
   };
   return (
-    <div style={{ padding: "1rem",marginTop:'80px' }}>
+    <div style={{ padding: "1rem", marginTop: "80px" }}>
       <div style={{ width: "40%", margin: "auto" }}>
         <h4>Create NFT's</h4>
         <div style={{ marginTop: "1rem" }}>
@@ -159,7 +137,6 @@ const CreateNft : React.FC<NftComponentProps> = ({nft,marketplace}) => {
               marginTop: ".5rem",
               outline: "none",
             }}
-          
             placeholder="Description"
           />
         </div>
@@ -187,6 +164,6 @@ const CreateNft : React.FC<NftComponentProps> = ({nft,marketplace}) => {
       </div>
     </div>
   );
-}
+};
 
-export default CreateNft
+export default CreateNft;

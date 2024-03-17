@@ -1,91 +1,99 @@
-import { ethers } from 'ethers';
-import React, { useEffect, useState } from 'react'
-declare var window : any
-const NoNetworkPage = () => {
+import { ethers } from "ethers";
+import React, { useEffect, useMemo, useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
+import {
+  handleMetamaskRequest,
+  handlePolygonRequest,
+} from "../../utils/handlePolygonRequest";
+declare var window: any;
+const NetworkNotFound = () => {
   const [isMetaMaskInstalled, setIsMetaMaskInstalled] = useState(false);
+  const [connectedToPolygon, setConnectedToPolygon] = useState(false);
+  const [chainId, setChainId] = useState<number>();
+  const [metamaskConnected, setMetamskConnected] = useState(false)
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    const checkMetaMask = async () => {
-      const networkId = await window.ethereum.request({
-        method: "net_version",
-      });
-      if (window.ethereum) {
-        try {
-          // Request account access
-          await window.ethereum.request({ method: "eth_requestAccounts" });
-          setIsMetaMaskInstalled(true);
-        } catch (error) {
-          setIsMetaMaskInstalled(false);
-        }
-      }
-      // Legacy dapp browsers...
-      else if (window.web3) {
+
+  const checkMetaMask = async () => {
+    if (window.ethereum) {
+      try {
+        // await window.ethereum.request({ method: "eth_requestAccounts" });
         setIsMetaMaskInstalled(true);
-      }
-      // Non-dapp browsers...
-      else {
+      } catch (error) {
         setIsMetaMaskInstalled(false);
       }
-    };
-
-    checkMetaMask();
-  }, []);
-
-  const handleSepoliaRequest =  async () => {
-    if (window.ethereum) {
-      try {
-        // Request chain change to Ethereum Mainnet
-        await window.ethereum.request({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: '0x11155111' }], // Chain ID for Ethereum Mainnet
-        });
-
-        console.log('Switched to Ethereum Mainnet!');
-      } catch (error) {
-        console.error('Error switching chain:', error);
-      }
-    } else {
-      console.error('MetaMask not detected!');
     }
   };
-  const [networkName, setNetworkName] = useState('');
 
-  useEffect(() => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const getNetworkName = async () => {
+    try {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
 
-    const getNetworkName = async () => {
-      try {
-        const network = await provider.getNetwork();
-        console.log('network', network)
-        setNetworkName(network.name);
-      } catch (error) {
-        console.error('Error fetching network:', error);
-      }
-    };
+      const network = await provider.getNetwork();
 
-    if (window.ethereum) {
+      setChainId(network.chainId);
+    } catch (error) {
+      console.error("Error fetching network:", error);
+    }
+  };
+  useMemo(() => {
+    if (window.ethereum && isMetaMaskInstalled) {
       getNetworkName();
-    } else {
-      console.error('MetaMask not detected');
     }
   }, []);
 
-console.log('networkName', networkName)
+  useEffect(() => {
+    checkMetaMask();
+  }, []);
+  useEffect(() => {
+    if (chainId === 11155111) setConnectedToPolygon(true);
+    else setConnectedToPolygon(false);
+  }, [chainId]);
+
+  const metamaskRequest = async()=>{
+   const data = await handleMetamaskRequest()
+   if(data){
+    setMetamskConnected(true)
+   }
+   else{
+    setMetamskConnected(false)
+   }
+  }
+
   return (
+   
     <div>
-      {isMetaMaskInstalled ? (
-        <div>
-        <p>Connect With Ethereum Network</p>
-        <button onClick={handleSepoliaRequest}>Here</button>
-          </div>
-      ) : (
-        <p>
-          MetaMask is not installed. Download From
-          <a href="https://chromewebstore.google.com/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=en-US&utm_source=ext_sidebar" target="_blank">here</a>{" "}
+       
+      {!isMetaMaskInstalled ? (
+        <p className="d-flex justify-content-center align-items-center m-4">
+          To Interact With Blockchain Please Install <b> &nbsp; Metamask  &nbsp;</b> Extension From &nbsp;
+          <a
+            href="https://chromewebstore.google.com/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=en-US&utm_source=ext_sidebar"
+            target="_blank"
+          >
+           <span>
+             here
+            </span>  
+          </a>
         </p>
+      ) : connectedToPolygon ? (
+        <div className="d-flex justify-content-center align-items-center m-4" >
+
+        <button className="btn btn-secondary" onClick={() => navigate("/")}>Go ahead</button>
+        </div>
+      ) : (
+        connectedToPolygon ?
+       ( <div className="d-flex justify-content-center align-items-center m-4" >
+          
+        <button className="btn btn btn-secondary" onClick={metamaskRequest}>Connect Metamsk</button>
+        </div>):
+        <div className="d-flex justify-content-center align-items-center m-4" >
+          
+        <p>Switch to Sepolia Testnet and connect your wallet</p>
+        </div>
       )}
     </div>
   );
-}
+};
 
-export default NoNetworkPage
+export default NetworkNotFound;
