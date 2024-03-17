@@ -20,6 +20,7 @@ export const handlePolygonRequest = async () => {
             },
           ],
         });
+        return;
       } catch (error) {
           console.log(error)
       }
@@ -32,6 +33,7 @@ export const handleMetamaskRequest = async() => {
         const accounts = await window.ethereum.request({
             method: "eth_requestAccounts",
         });
+        return true
 
     
     }
@@ -41,6 +43,7 @@ export const handleMetamaskRequest = async() => {
         toast('Please Connect Your Metamask to explore platform')
       }, 400);
     }
+    return false
     }
     //   setAccount(accounts[0]);
   };

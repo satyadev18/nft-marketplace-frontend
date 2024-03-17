@@ -47,6 +47,13 @@ const MyListings: React.FC<NftComponentProps> = ({nft,marketplace,account}) => {
   useEffect(() => {
     getListedItems();
   }, []);
+
+  if (loading)
+  return (
+    <main className="d-flex justify-content-center align-items-center m-4" style={{ padding: "1rem 0",marginTop:'150px',marginLeft:'480px' }}>
+      <h2>Loading Data From Blockchain...</h2>
+    </main>
+  );
   
 
   return (

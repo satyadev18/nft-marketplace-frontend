@@ -10,7 +10,9 @@ const NetworkNotFound = () => {
   const [isMetaMaskInstalled, setIsMetaMaskInstalled] = useState(false);
   const [connectedToPolygon, setConnectedToPolygon] = useState(false);
   const [chainId, setChainId] = useState<number>();
+  const [metamaskConnected, setMetamskConnected] = useState(false)
   const navigate = useNavigate();
+
 
   const checkMetaMask = async () => {
     if (window.ethereum) {
@@ -44,27 +46,51 @@ const NetworkNotFound = () => {
     checkMetaMask();
   }, []);
   useEffect(() => {
-    if (chainId === 8001) setConnectedToPolygon(true);
+    if (chainId === 11155111) setConnectedToPolygon(true);
     else setConnectedToPolygon(false);
   }, [chainId]);
+
+  const metamaskRequest = async()=>{
+   const data = await handleMetamaskRequest()
+   if(data){
+    setMetamskConnected(true)
+   }
+   else{
+    setMetamskConnected(false)
+   }
+  }
 
   return (
    
     <div>
+       
       {!isMetaMaskInstalled ? (
-        <p>
-          MetaMask is not installed. Download From
+        <p className="d-flex justify-content-center align-items-center m-4">
+          To Interact With Blockchain Please Install <b> &nbsp; Metamask  &nbsp;</b> Extension From &nbsp;
           <a
             href="https://chromewebstore.google.com/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=en-US&utm_source=ext_sidebar"
             target="_blank"
           >
-            here
+           <span>
+             here
+            </span>  
           </a>
         </p>
       ) : connectedToPolygon ? (
-        <button onClick={() => navigate("/")}>Go ahead</button>
+        <div className="d-flex justify-content-center align-items-center m-4" >
+
+        <button className="btn btn-secondary" onClick={() => navigate("/")}>Go ahead</button>
+        </div>
       ) : (
-        <button onClick={() => handleMetamaskRequest()}>Connect Metamsk</button>
+        connectedToPolygon ?
+       ( <div className="d-flex justify-content-center align-items-center m-4" >
+          
+        <button className="btn btn btn-secondary" onClick={metamaskRequest}>Connect Metamsk</button>
+        </div>):
+        <div className="d-flex justify-content-center align-items-center m-4" >
+          
+        <p>Switch to Sepolia Testnet and connect your wallet</p>
+        </div>
       )}
     </div>
   );

@@ -5,6 +5,6 @@ interface Properties {
     width:string;
 }
 
-const Logo = ({height,width}:Properties) => <img style = {{borderRadius:'50%', height,width}}src={logo} />
+const Logo = ({height,width}:Properties) => <img style = {{borderRadius:'20px', height,width}}src={logo} />
 
 export default Logo
