@@ -4,12 +4,18 @@ import { ethers } from "ethers";
 import axios from "axios";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
+declare var window: any;
 const CreateNft: React.FC<NftComponentProps> = ({ nft, marketplace }) => {
   const [fileImg, setFile] = useState<any>();
   const [name, setName] = useState("");
   const [desc, setDescription] = useState("");
   const [price, setPrice] = useState("");
+  const [mintDisable, setMintDisable] = useState(false);
 
+  const navigate = useNavigate();
   const sendJSONtoIPFS = async (ImgHash: any) => {
     try {
       const resJSON = await axios({
@@ -36,7 +42,7 @@ const CreateNft: React.FC<NftComponentProps> = ({ nft, marketplace }) => {
 
   const sendFileToIPFS = async (e: any) => {
     e.preventDefault();
-
+    setMintDisable(true);
     if (fileImg) {
       try {
         const formData = new FormData();
@@ -61,15 +67,34 @@ const CreateNft: React.FC<NftComponentProps> = ({ nft, marketplace }) => {
   };
 
   const mintThenList = async (uri: any) => {
-    await (await nft.mint(uri)).wait();
+    try {
+      await (await nft.mint(uri)).wait();
 
-    const id = await nft.tokenCount();
+      const id = await nft.tokenCount();
 
-    await (await nft.setApprovalForAll(marketplace.address, true)).wait();
+      await (await nft.setApprovalForAll(marketplace.address, true)).wait();
 
-    const listingPrice = ethers.utils.parseEther(price.toString());
-    await (await marketplace.makeItem(nft.address, id, listingPrice)).wait();
-    toast('Your Nft has been generated successfully')
+      const listingPrice = ethers.utils.parseEther(price.toString());
+      await (await marketplace.makeItem(nft.address, id, listingPrice)).wait();
+      if (window.ethereum && window.ethereum.close) {
+        await window.ethereum.close();
+      }
+
+  
+        toast("Your Nft has been generated successfully");
+        setMintDisable(false);
+     
+
+      setTimeout(() => {
+        navigate("/listings");
+      }, 1000);
+    } catch (error: any) {
+      setMintDisable(false);
+      console.log(error, "error");
+      if (error?.code === 4001) {
+        toast.error(error?.message);
+      }
+    }
   };
   return (
     <div style={{ padding: "1rem", marginTop: "80px" }}>
@@ -101,8 +126,8 @@ const CreateNft: React.FC<NftComponentProps> = ({ nft, marketplace }) => {
               marginTop: ".5rem",
               outline: "none",
             }}
-            type="text"
-            placeholder="Price (In MATIC)"
+            type="number"
+            placeholder="Price (In ETH)"
           />
         </div>
         <div style={{ marginTop: "1rem" }}>
@@ -123,7 +148,7 @@ const CreateNft: React.FC<NftComponentProps> = ({ nft, marketplace }) => {
               border: "1px solid black",
             }}
             type="file"
-            placeholder="Price (In MATIC.)"
+            placeholder="Price (In ETH.)"
           />
         </div>
         <div style={{ marginTop: "1rem" }}>
@@ -152,13 +177,20 @@ const CreateNft: React.FC<NftComponentProps> = ({ nft, marketplace }) => {
               width: "100%",
               padding: "12px",
               borderRadius: "8px",
-              background: " #f7931a",
+              background: mintDisable ? "#E9AA6E" : "#f7931a",
               border: "none",
               color: "#fff",
             }}
+            disabled={mintDisable}
             onClick={sendFileToIPFS}
           >
-            Create
+            {mintDisable ? (
+              <span>
+                Minting NFT <FontAwesomeIcon icon={faSpinner} spin />
+              </span>
+            ) : (
+              "Create"
+            )}
           </button>
         </div>
       </div>

@@ -2,9 +2,13 @@ import React, { useEffect, useState } from 'react'
 import { NftComponentProps } from '../../shared/interface'
 import NftItem from '../../components/NftItem/NftItem';
 import { ethers } from 'ethers';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 const AllListings: React.FC<NftComponentProps> = ({nft,marketplace}) => {
   const [loading, setLoading] = useState(true);
   const [items, setItems] = useState<any>([]);
+
+  const navigate = useNavigate()
 
   const loadMarketplaceItems = async () => {
     // Load all unsold items
@@ -38,7 +42,8 @@ const AllListings: React.FC<NftComponentProps> = ({nft,marketplace}) => {
     await (
       await marketplace.purchaseItems(item.itemId, { value: item.totalPrice })
     ).wait();
-    loadMarketplaceItems();
+    toast('NFT Purchase Successful')
+    navigate('/purchase')
   };
 
   useEffect(() => {
