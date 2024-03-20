@@ -33,7 +33,7 @@ const NftItem = ({
           <span className="mx-2"><span style={{fontWeight:'600'}}>NFT Token Id</span> {"- " + tokenId}</span>
           </>}
           <p style={{ margin: "4px" }}>{description}</p>
-          <h4 style={{ margin: "4px" }}>{price} MATIC</h4>
+          <h4 style={{ margin: "4px" }}>{price} ETH</h4>
           {onBuyClick && (
             <button
               style={{
